@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="QueryGlass/src/Application/Application.csproj" />
+  <Project Path="QueryGlass/src/Domain/Domain.csproj" />
+  <Project Path="QueryGlass/src/Infrastructure/Infrastructure.csproj" />
+  <Project Path="QueryGlass/src/Web/Web.csproj" />
+  <Project Path="QueryGlass/tests/Application.FunctionalTests/Application.FunctionalTests.csproj" />
+  <Project Path="QueryGlass/tests/Application.UnitTests/Application.UnitTests.csproj" />
+  <Project Path="QueryGlass/tests/Domain.UnitTests/Domain.UnitTests.csproj" />
+  <Project Path="QueryGlass/tests/Infrastructure.IntegrationTests/Infrastructure.IntegrationTests.csproj" />
+  <Project Path="QueryGlass/tests/Web.AcceptanceTests/Web.AcceptanceTests.csproj" />
+</Solution>
