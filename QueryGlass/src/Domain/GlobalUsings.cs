@@ -4,3 +4,4 @@ global using QueryGlass.Domain.Enums;
 global using QueryGlass.Domain.Events;
 global using QueryGlass.Domain.Exceptions;
 global using QueryGlass.Domain.ValueObjects;
+global using Microsoft.AspNetCore.Identity;

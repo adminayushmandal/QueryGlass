@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using QueryGlass.Application.Common.Interfaces;
 using QueryGlass.Domain.Constants;
+using QueryGlass.Domain.Entities;
 using QueryGlass.Infrastructure.Data;
 using QueryGlass.Infrastructure.Data.Interceptors;
 using QueryGlass.Infrastructure.Identity;
@@ -35,7 +35,7 @@ public static class DependencyInjection
 
         builder.Services
             .AddDefaultIdentity<ApplicationUser>()
-            .AddRoles<IdentityRole>()
+            .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         builder.Services.AddSingleton(TimeProvider.System);

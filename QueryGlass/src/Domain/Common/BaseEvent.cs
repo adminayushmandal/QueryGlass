@@ -2,6 +2,4 @@
 
 namespace QueryGlass.Domain.Common;
 
-public abstract class BaseEvent : INotification
-{
-}
+public record BaseEvent : INotification;

@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QueryGlass.Domain.Constants;
 using QueryGlass.Domain.Entities;
-using QueryGlass.Infrastructure.Identity;
 
 namespace QueryGlass.Infrastructure.Data;
 
@@ -21,20 +20,12 @@ public static class InitialiserExtensions
     }
 }
 
-public class ApplicationDbContextInitialiser
+public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
 {
-    private readonly ILogger<ApplicationDbContextInitialiser> _logger;
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
-
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
-    {
-        _logger = logger;
-        _context = context;
-        _userManager = userManager;
-        _roleManager = roleManager;
-    }
+    private readonly ILogger<ApplicationDbContextInitialiser> _logger = logger;
+    private readonly ApplicationDbContext _context = context;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
 
     public async Task InitialiseAsync()
     {
@@ -66,43 +57,89 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
-        // Default roles
-        var administratorRole = new IdentityRole(Roles.Administrator);
-
-        if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
+        try
         {
-            await _roleManager.CreateAsync(administratorRole);
+            await SeedRolesAsync();
+            await SeedAdminUserAsync();
         }
-
-        // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
-
-        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+        catch (Exception ex)
         {
-            await _userManager.CreateAsync(administrator, "Administrator1!");
-            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
-            {
-                await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
-            }
+            _logger.LogError(ex, "An error occured during seeding.");
+            throw;
         }
+    }
 
-        // Default data
-        // Seed, if necessary
-        if (!_context.TodoLists.Any())
+    public async Task SeedRolesAsync()
+    {
+        _logger.LogInformation("Start seeding application roles...");
+        try
         {
-            _context.TodoLists.Add(new TodoList
+
+            var adminRole = new ApplicationRole(Roles.Administrator, "Full system access.");
+            var operatorRole = new ApplicationRole(Roles.Operator, "Can monitor and manage services");
+            var viewerRole = new ApplicationRole(Roles.Viewer, "Read-only monitoring access");
+            var dbaRole = new ApplicationRole(Roles.DBA, "Database administrator with DB control privileges.");
+
+            List<ApplicationRole> roles = [adminRole, operatorRole, viewerRole, dbaRole];
+
+            foreach (var role in roles)
             {
-                Title = "Todo List",
-                Items =
+                if (!string.IsNullOrEmpty(role.Name) && !await _roleManager.RoleExistsAsync(role.Name))
                 {
-                    new TodoItem { Title = "Make a todo list 📃" },
-                    new TodoItem { Title = "Check off the first item ✅" },
-                    new TodoItem { Title = "Realise you've already done two things on the list! 🤯"},
-                    new TodoItem { Title = "Reward yourself with a nice, long nap 🏆" },
-                }
-            });
+                    var result = await _roleManager.CreateAsync(role);
 
-            await _context.SaveChangesAsync();
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("Rolen '{roleName}' successfully added", role.Name);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to create role '{roleName}'\nError '{errorReason}'", role.Name, string.Join(", ", result.Errors.Select(x => x.Description)));
+                    }
+                }
+            }
+            _logger.LogInformation("Role seeding completed successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occured during the seeding roles.");
+            throw;
+        }
+    }
+
+    private async Task SeedAdminUserAsync()
+    {
+        _logger.LogInformation("Seeding admin user...");
+        var user = new ApplicationUser
+        {
+            FirstName = "Ayush",
+            LastName = "Krishan Mandal",
+            Email = "ayush@localhost",
+            UserName = "ayush@localhost",
+        };
+
+        try
+        {
+            if (_userManager.Users.All(x => x.UserName != user.UserName))
+            {
+                var result = await _userManager.CreateAsync(user, "Test@123");
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, Roles.Administrator);
+                    _logger.LogInformation("User '{email}' is created.", user.Email);
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to seed user '{email}'", user.Email);
+                }
+            }
+            _logger.LogInformation("User '{email}' is created successfully.", user.Email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occured during the seed user");
+            throw;
         }
     }
 }

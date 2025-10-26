@@ -1,6 +1,6 @@
 ﻿namespace QueryGlass.Domain.Events;
 
-public class TodoItemDeletedEvent : BaseEvent
+public record TodoItemDeletedEvent : BaseEvent
 {
     public TodoItemDeletedEvent(TodoItem item)
     {

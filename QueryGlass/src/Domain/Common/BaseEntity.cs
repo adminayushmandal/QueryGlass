@@ -2,13 +2,11 @@
 
 namespace QueryGlass.Domain.Common;
 
-public abstract class BaseEntity
+public abstract class BaseEntity<T> : IDomainEvent
 {
-    // This can easily be modified to be BaseEntity<T> and public T Id to support different key types.
-    // Using non-generic integer types for simplicity
-    public int Id { get; set; }
+    public T? Id { get; set; }
 
-    private readonly List<BaseEvent> _domainEvents = new();
+    private readonly List<BaseEvent> _domainEvents = [];
 
     [NotMapped]
     public IReadOnlyCollection<BaseEvent> DomainEvents => _domainEvents.AsReadOnly();

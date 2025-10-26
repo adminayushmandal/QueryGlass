@@ -1,6 +1,6 @@
 ﻿namespace QueryGlass.Domain.Common;
 
-public abstract class BaseAuditableEntity : BaseEntity
+public abstract class BaseAuditableEntity : BaseEntity<Guid>
 {
     public DateTimeOffset Created { get; set; }
 

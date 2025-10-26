@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using QueryGlass.Application.Common.Interfaces;
 using QueryGlass.Application.Common.Models;
+using QueryGlass.Domain.Entities;
 
 namespace QueryGlass.Infrastructure.Identity;
 
@@ -39,7 +39,7 @@ public class IdentityService : IIdentityService
 
         var result = await _userManager.CreateAsync(user, password);
 
-        return (result.ToApplicationResult(), user.Id);
+        return (result.ToApplicationResult(), user.Id.ToString());
     }
 
     public async Task<bool> IsInRoleAsync(string userId, string role)

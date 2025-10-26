@@ -20,6 +20,7 @@ import {HomeComponent} from './app/home/home.component';
 import {CounterComponent} from './app/counter/counter.component';
 import {AppComponent} from './app/app.component';
 import {provideAnimationsAsync} from "@angular/platform-browser/animations/async";
+import {routes} from "./app/app.route";
 
 export function getBaseUrl() {
   return document.getElementsByTagName('base')[0].href;
@@ -44,10 +45,7 @@ bootstrapApplication(AppComponent, {
     {provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true},
     provideHttpClient(withInterceptorsFromDi()),
     provideZonelessChangeDetection(),
-    provideRouter([
-      {path: '', component: HomeComponent, pathMatch: 'full'},
-      {path: 'counter', component: CounterComponent},
-    ]),
+    provideRouter(routes),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

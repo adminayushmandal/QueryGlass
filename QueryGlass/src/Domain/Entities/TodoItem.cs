@@ -1,6 +1,6 @@
 ﻿namespace QueryGlass.Domain.Entities;
 
-public class TodoItem : BaseAuditableEntity
+public class TodoItem : BaseEntity<int>, IAuditableEntity
 {
     public int ListId { get; set; }
 
@@ -28,4 +28,8 @@ public class TodoItem : BaseAuditableEntity
     }
 
     public TodoList List { get; set; } = null!;
+    public DateTimeOffset Created { get; set; }
+    public string? CreatedBy { get; set; }
+    public DateTimeOffset LastModified { get; set; }
+    public string? LastModifiedBy { get; set; }
 }

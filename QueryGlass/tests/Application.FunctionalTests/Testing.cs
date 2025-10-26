@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using QueryGlass.Domain.Constants;
+using QueryGlass.Domain.Entities;
 using QueryGlass.Infrastructure.Data;
 using QueryGlass.Infrastructure.Identity;
 
@@ -88,7 +89,7 @@ public partial class Testing
 
         if (result.Succeeded)
         {
-            _userId = user.Id;
+            _userId = user.Id.ToString();
             _roles = roles.ToList();
             return _userId;
         }
