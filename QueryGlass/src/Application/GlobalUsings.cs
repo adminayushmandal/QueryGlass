@@ -4,3 +4,4 @@ global using AutoMapper.QueryableExtensions;
 global using FluentValidation;
 global using MediatR;
 global using Microsoft.EntityFrameworkCore;
+global using QueryGlass.Application.Common.Models;

@@ -16,8 +16,6 @@ import {AuthorizeInterceptor} from 'src/api-authorization/authorize.interceptor'
 import {BrowserModule, bootstrapApplication} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {provideRouter} from '@angular/router';
-import {HomeComponent} from './app/home/home.component';
-import {CounterComponent} from './app/counter/counter.component';
 import {AppComponent} from './app/app.component';
 import {provideAnimationsAsync} from "@angular/platform-browser/animations/async";
 import {routes} from "./app/app.route";
