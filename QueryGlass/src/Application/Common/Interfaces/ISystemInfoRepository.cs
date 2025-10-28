@@ -13,4 +13,5 @@ public interface ISystemInfoRepository
     Task<SystemInfo> UpdateAsync(SystemInfo systemInfo, CancellationToken cancellationToken = default);
 
     Task<bool> DeleteAsync(Guid systemId, CancellationToken cancellationToken = default);
+     Task<bool> IsExistAsync(string machineName, CancellationToken cancellationToken = default);
 }

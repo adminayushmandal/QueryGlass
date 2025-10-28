@@ -52,6 +52,13 @@ internal sealed class SystemInfoRepository(ILogger<SystemInfoRepository> logger,
     public async Task<IEnumerable<SystemInfo>> GetSystemsAsync(CancellationToken cancellationToken = default)
         => await _context.SystemInformations.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
 
+    public async Task<bool> IsExistAsync(string machineName, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(machineName)) throw new ArgumentNullException(nameof(machineName), "Machine name cannot be null or empty.");
+        var entityExists = await _context.SystemInformations.AnyAsync(x => x.MachineName == machineName, cancellationToken);
+        return entityExists;
+    }
+
     public async Task<SystemInfo> UpdateAsync(SystemInfo systemInfo, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("System info with id '{systemId}' starts updating...", systemInfo.Id);
