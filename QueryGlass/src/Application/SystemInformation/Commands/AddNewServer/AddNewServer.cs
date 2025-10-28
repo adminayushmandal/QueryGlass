@@ -5,9 +5,12 @@ namespace QueryGlass.Application.SystemInformation.Commands.AddNewServer;
 public record AddNewServerCommand : IRequest<Result>
 {
     public string? ServerName { get; init; }
+    public bool IsRemoteServer { get; init; }
+    public string? UserName { get; init; }
+    public string? Password { get; init; }
 }
 
-public class AddNewServerCommandValidator : AbstractValidator<AddNewServerCommand>
+internal sealed class AddNewServerCommandValidator : AbstractValidator<AddNewServerCommand>
 {
     public AddNewServerCommandValidator()
     {
@@ -21,33 +24,50 @@ public class AddNewServerCommandValidator : AbstractValidator<AddNewServerComman
     }
 }
 
-public class AddNewServerCommandHandler(ISystemInfoRepository systemInfoRepository, ISystemProbeService systemProbe)
+public class AddNewServerCommandHandler(ISystemInfoRepository repository, ISystemProbeService probeService)
     : IRequestHandler<AddNewServerCommand, Result>
 {
-    private readonly ISystemInfoRepository _systemInfoRepository = systemInfoRepository;
-    private readonly ISystemProbeService _systemProbe = systemProbe;
+    private readonly ISystemInfoRepository _repository = repository;
+    private readonly ISystemProbeService _probeService = probeService;
 
     public async Task<Result> Handle(AddNewServerCommand request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.ServerName))
         {
-            throw new InvalidOperationException("Server name is null or empty.");
+            throw new ArgumentNullException("Server name cannot be null or empty.", nameof(request.ServerName));
         }
 
-        var isCheck = await _systemProbe.CheckServerAvailabilityAsync(request.ServerName, cancellationToken);
+        var exists = await _repository.IsExistAsync(request.ServerName, cancellationToken);
 
-        if (!isCheck)
+        if (exists)
         {
-            throw new KeyNotFoundException($"Server with name '{request.ServerName}' not available.");
+            throw new InvalidOperationException($"Server '{request.ServerName}' already exists.");
         }
 
-        var os = await _systemProbe.GetOsVersionAsync(request.ServerName, cancellationToken);
+        var isAvailable = await _probeService.CheckServerAvailabilityAsync(request.ServerName, cancellationToken);
+        if (!isAvailable)
+        {
+            throw new InvalidOperationException($"Server '{request.ServerName}' is not reachable.");
+        }
+        string operatingSystem = string.Empty;
 
-        if (string.IsNullOrEmpty(os)) throw new ApplicationException("Failed to get OS version.");
+        if (request.IsRemoteServer && !string.IsNullOrEmpty(request.UserName) && !string.IsNullOrEmpty(request.Password))
+        {
+            operatingSystem = await _probeService.GetOperatingSystemRemoteAsync(request.ServerName, request.UserName, request.Password, cancellationToken);
+        }
+        else
+        {
+            operatingSystem = await _probeService.GetLocalMachineOsVersionAsync(request.ServerName, cancellationToken);
+        }
 
-        var entity = _systemInfoRepository.CreateAsync(new() { OSVersion = os, MachineName = request.ServerName, },
-            cancellationToken);
+        var server = new Domain.Entities.SystemInfo
+        {
+            MachineName = request.ServerName,
+            OSVersion = operatingSystem,
+        };
 
-        return entity is null ? throw new ApplicationException("Failed to add server.") : Result.Success();
+        var entity = await _repository.CreateAsync(server, cancellationToken);
+        if (entity is null) throw new ApplicationException("Failed to add the server.");
+        return Result.Success();
     }
 }

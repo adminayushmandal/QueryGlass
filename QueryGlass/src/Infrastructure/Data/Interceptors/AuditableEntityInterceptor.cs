@@ -37,18 +37,42 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         if (context == null) return;
 
-        foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
+        var baseAuditEntries = context.ChangeTracker.Entries<BaseAuditableEntity>();
+
+        var auditEntries = context.ChangeTracker.Entries<IAuditableEntity>();
+
+        if (auditEntries.Any())
         {
-            if (entry.State is EntityState.Added or EntityState.Modified || entry.HasChangedOwnedEntities())
+            foreach (var entry in auditEntries)
             {
-                var utcNow = _dateTime.GetUtcNow();
-                if (entry.State == EntityState.Added)
+                if (entry.State is EntityState.Added or EntityState.Modified || entry.HasChangedOwnedEntities())
                 {
-                    entry.Entity.CreatedBy = _user.Id;
-                    entry.Entity.Created = utcNow;
+                    var utcNow = _dateTime.GetUtcNow();
+                    if (entry.State == EntityState.Added)
+                    {
+                        entry.Entity.CreatedBy = _user.Id;
+                        entry.Entity.Created = utcNow;
+                    }
+                    entry.Entity.LastModifiedBy = _user.Id;
+                    entry.Entity.LastModified = utcNow;
                 }
-                entry.Entity.LastModifiedBy = _user.Id;
-                entry.Entity.LastModified = utcNow;
+            }
+        }
+        else
+        {
+            foreach (var entry in baseAuditEntries)
+            {
+                if (entry.State is EntityState.Added or EntityState.Modified || entry.HasChangedOwnedEntities())
+                {
+                    var utcNow = _dateTime.GetUtcNow();
+                    if (entry.State == EntityState.Added)
+                    {
+                        entry.Entity.CreatedBy = _user.Id;
+                        entry.Entity.Created = utcNow;
+                    }
+                    entry.Entity.LastModifiedBy = _user.Id;
+                    entry.Entity.LastModified = utcNow;
+                }
             }
         }
     }

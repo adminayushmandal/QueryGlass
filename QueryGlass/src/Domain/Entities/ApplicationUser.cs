@@ -4,9 +4,7 @@ namespace QueryGlass.Domain.Entities;
 
 public class ApplicationUser : IdentityUser<Guid>, IAuditableEntity, IDomainEvent
 {
-    public string? FirstName { get; set; }
-
-    public string? LastName { get; set; }
+    public string? DisplayName { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -21,7 +19,6 @@ public class ApplicationUser : IdentityUser<Guid>, IAuditableEntity, IDomainEven
     public ICollection<AppSetting> AppSettings { get; set; } = [];
 
     public ICollection<DatabaseMigrationHistory> MigrationHistories { get; set; } = [];
-
 
     private readonly List<BaseEvent> _domainEvents = [];
 

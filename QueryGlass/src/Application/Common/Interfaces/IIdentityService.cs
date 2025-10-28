@@ -1,6 +1,4 @@
-﻿using QueryGlass.Application.Common.Models;
-
-namespace QueryGlass.Application.Common.Interfaces;
+﻿namespace QueryGlass.Application.Common.Interfaces;
 
 public interface IIdentityService
 {
@@ -13,4 +11,6 @@ public interface IIdentityService
     Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
 
     Task<Result> DeleteUserAsync(string userId);
+
+    Task<UserDto?> GetUserAsync(string userId, CancellationToken cancellationToken = default);
 }

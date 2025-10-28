@@ -112,8 +112,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         _logger.LogInformation("Seeding admin user...");
         var user = new ApplicationUser
         {
-            FirstName = "Ayush",
-            LastName = "Krishan Mandal",
+            DisplayName = "Ayush Krishan Mandal",
             Email = "ayush@localhost",
             UserName = "ayush@localhost",
         };

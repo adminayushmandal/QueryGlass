@@ -1,5 +1,7 @@
 ﻿using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 using QueryGlass.Application.Common.Interfaces;
 using QueryGlass.Infrastructure.Data;
 using QueryGlass.Web.Services;
@@ -34,7 +36,22 @@ public static class DependencyInjection
         builder.Services.AddOpenApiDocument((configure, sp) =>
         {
             configure.Title = "QueryGlass API";
+            var scope = sp.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
+            var environment = provider.GetRequiredService<IWebHostEnvironment>();
 
+            if (environment.IsDevelopment())
+            {
+                configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Type into the textbox: Bearer {your JWT token}."
+                });
+
+                configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            }
         });
     }
 

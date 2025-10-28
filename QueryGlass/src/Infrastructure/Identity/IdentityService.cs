@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using QueryGlass.Application.Common.Interfaces;
@@ -6,21 +7,15 @@ using QueryGlass.Domain.Entities;
 
 namespace QueryGlass.Infrastructure.Identity;
 
-public class IdentityService : IIdentityService
+public class IdentityService(
+    UserManager<ApplicationUser> userManager,
+    IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
+    IAuthorizationService authorizationService, IMapper mapper) : IIdentityService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
-    private readonly IAuthorizationService _authorizationService;
-
-    public IdentityService(
-        UserManager<ApplicationUser> userManager,
-        IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
-        IAuthorizationService authorizationService)
-    {
-        _userManager = userManager;
-        _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
-        _authorizationService = authorizationService;
-    }
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
+    private readonly IAuthorizationService _authorizationService = authorizationService;
+    private readonly IMapper _mapper = mapper;
 
     public async Task<string?> GetUserNameAsync(string userId)
     {
@@ -77,5 +72,16 @@ public class IdentityService : IIdentityService
         var result = await _userManager.DeleteAsync(user);
 
         return result.ToApplicationResult();
+    }
+
+    public async Task<UserDto?> GetUserAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var appUser = await _userManager.FindByIdAsync(userId)
+        ?? throw new KeyNotFoundException($"User not found with this id '{userId}'");
+
+        var user = _mapper.Map<UserDto>(appUser);
+        var roles = await _userManager.GetRolesAsync(appUser);
+        user.Roles = [.. roles];
+        return user;
     }
 }

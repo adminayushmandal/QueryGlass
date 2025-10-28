@@ -15,7 +15,7 @@ internal sealed class SystemMetricConfiguration : IEntityTypeConfiguration<Syste
             .HasForeignKey(x => x.SystemInfoId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.OwnsOne(x => x.CpuCores);
+        builder.OwnsOne(x => x.CpuDetail);
         builder.OwnsOne(x => x.MemoryDetail);
 
         builder.HasMany(x => x.DiskDetails)
