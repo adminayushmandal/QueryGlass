@@ -15,22 +15,17 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
-export interface IServerClient {
+export interface ISqlServerClient {
     /**
-     * Add new server
-     * @return OK
+     * Add new sql instance
      */
-    addNewServer(command: AddNewServerCommand): Observable<void>;
-    /**
-     * Delete server
-     */
-    deleteServer(serverId: string): Observable<Result>;
+    addNewSqlInstance(command: AddNewSqlInstanceCommand): Observable<Result>;
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class ServerClient implements IServerClient {
+export class SqlServerClient implements ISqlServerClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -41,11 +36,10 @@ export class ServerClient implements IServerClient {
     }
 
     /**
-     * Add new server
-     * @return OK
+     * Add new sql instance
      */
-    addNewServer(command: AddNewServerCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/Server/addnewserver";
+    addNewSqlInstance(command: AddNewSqlInstanceCommand): Observable<Result> {
+        let url_ = this.baseUrl + "/api/SqlServer/addnewsqlinstance";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -61,77 +55,11 @@ export class ServerClient implements IServerClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAddNewServer(response_);
+            return this.processAddNewSqlInstance(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAddNewServer(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processAddNewServer(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status === 201) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result201: any = null;
-            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result201 = Result.fromJS(resultData201);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result201);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    /**
-     * Delete server
-     */
-    deleteServer(serverId: string): Observable<Result> {
-        let url_ = this.baseUrl + "/api/Server/deleteserver?";
-        if (serverId === undefined || serverId === null)
-            throw new Error("The parameter 'serverId' must be defined and cannot be null.");
-        else
-            url_ += "serverId=" + encodeURIComponent("" + serverId) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteServer(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteServer(response_ as any);
+                    return this.processAddNewSqlInstance(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<Result>;
                 }
@@ -140,7 +68,7 @@ export class ServerClient implements IServerClient {
         }));
     }
 
-    protected processDeleteServer(response: HttpResponseBase): Observable<Result> {
+    protected processAddNewSqlInstance(response: HttpResponseBase): Observable<Result> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -154,19 +82,19 @@ export class ServerClient implements IServerClient {
             result200 = Result.fromJS(resultData200);
             return _observableOf(result200);
             }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            }));
         } else if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result201: any = null;
             let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result201 = Result.fromJS(resultData201);
             return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1416,6 +1344,168 @@ export class WeatherForecastsClient implements IWeatherForecastsClient {
     }
 }
 
+export interface IServerClient {
+    /**
+     * Add new server
+     * @return OK
+     */
+    addNewServer(command: AddNewServerCommand): Observable<void>;
+    /**
+     * Delete server
+     */
+    deleteServer(serverId: string): Observable<Result>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ServerClient implements IServerClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * Add new server
+     * @return OK
+     */
+    addNewServer(command: AddNewServerCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Server/addnewserver";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAddNewServer(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAddNewServer(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processAddNewServer(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = Result.fromJS(resultData201);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Delete server
+     */
+    deleteServer(serverId: string): Observable<Result> {
+        let url_ = this.baseUrl + "/api/Server/deleteserver?";
+        if (serverId === undefined || serverId === null)
+            throw new Error("The parameter 'serverId' must be defined and cannot be null.");
+        else
+            url_ += "serverId=" + encodeURIComponent("" + serverId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteServer(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteServer(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Result>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Result>;
+        }));
+    }
+
+    protected processDeleteServer(response: HttpResponseBase): Observable<Result> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Result.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = Result.fromJS(resultData201);
+            return _observableOf(result201);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export class Result implements IResult {
     succeeded?: boolean;
     errors?: string[];
@@ -1528,13 +1618,10 @@ export interface IProblemDetails {
     [key: string]: any;
 }
 
-export class AddNewServerCommand implements IAddNewServerCommand {
-    serverName?: string | undefined;
-    isRemoteServer?: boolean;
-    userName?: string | undefined;
-    password?: string | undefined;
+export class AddNewSqlInstanceCommand implements IAddNewSqlInstanceCommand {
+    connectionString?: string;
 
-    constructor(data?: IAddNewServerCommand) {
+    constructor(data?: IAddNewSqlInstanceCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1545,35 +1632,26 @@ export class AddNewServerCommand implements IAddNewServerCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.serverName = _data["serverName"];
-            this.isRemoteServer = _data["isRemoteServer"];
-            this.userName = _data["userName"];
-            this.password = _data["password"];
+            this.connectionString = _data["connectionString"];
         }
     }
 
-    static fromJS(data: any): AddNewServerCommand {
+    static fromJS(data: any): AddNewSqlInstanceCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new AddNewServerCommand();
+        let result = new AddNewSqlInstanceCommand();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["serverName"] = this.serverName;
-        data["isRemoteServer"] = this.isRemoteServer;
-        data["userName"] = this.userName;
-        data["password"] = this.password;
+        data["connectionString"] = this.connectionString;
         return data;
     }
 }
 
-export interface IAddNewServerCommand {
-    serverName?: string | undefined;
-    isRemoteServer?: boolean;
-    userName?: string | undefined;
-    password?: string | undefined;
+export interface IAddNewSqlInstanceCommand {
+    connectionString?: string;
 }
 
 export class PaginatedListOfTodoItemBriefDto implements IPaginatedListOfTodoItemBriefDto {
@@ -2766,6 +2844,54 @@ export interface IWeatherForecast {
     temperatureC?: number;
     temperatureF?: number;
     summary?: string;
+}
+
+export class AddNewServerCommand implements IAddNewServerCommand {
+    serverName?: string | undefined;
+    isRemoteServer?: boolean;
+    userName?: string | undefined;
+    password?: string | undefined;
+
+    constructor(data?: IAddNewServerCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.serverName = _data["serverName"];
+            this.isRemoteServer = _data["isRemoteServer"];
+            this.userName = _data["userName"];
+            this.password = _data["password"];
+        }
+    }
+
+    static fromJS(data: any): AddNewServerCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddNewServerCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["serverName"] = this.serverName;
+        data["isRemoteServer"] = this.isRemoteServer;
+        data["userName"] = this.userName;
+        data["password"] = this.password;
+        return data;
+    }
+}
+
+export interface IAddNewServerCommand {
+    serverName?: string | undefined;
+    isRemoteServer?: boolean;
+    userName?: string | undefined;
+    password?: string | undefined;
 }
 
 export class SwaggerException extends Error {

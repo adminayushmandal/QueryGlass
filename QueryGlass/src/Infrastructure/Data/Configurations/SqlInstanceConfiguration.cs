@@ -15,5 +15,10 @@ internal sealed class SqlInstanceConfiguration : IEntityTypeConfiguration<SqlSer
         builder.Property(x => x.ConnectionString).IsRequired();
 
         builder.Property(x => x.Version).IsRequired();
+
+        builder.HasOne(x => x.Server)
+        .WithMany(x => x.SqlServers)
+        .HasForeignKey(x => x.ServerId)
+        .OnDelete(DeleteBehavior.NoAction);
     }
 }

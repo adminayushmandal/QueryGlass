@@ -24,5 +24,9 @@ public interface IApplicationDbContext
 
     DbSet<DatabaseMigrationHistory> DatabaseMigrationHistory { get; }
 
+    DbSet<SqlServerMetric> SqlServerMetrics { get; }
+
+    DbSet<SqlDatabaseMetric> SqlDatabaseMetrics { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

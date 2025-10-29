@@ -6,20 +6,20 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/Server/addnewserver": {
+    "/api/SqlServer/addnewsqlinstance": {
       "post": {
         "tags": [
-          "Server"
+          "SqlServer"
         ],
-        "summary": "Add new server",
-        "description": "Add new windows server of local or network.",
-        "operationId": "AddNewServer",
+        "summary": "Add new sql instance",
+        "description": "Add new sql instance of current system.",
+        "operationId": "AddNewSqlInstance",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddNewServerCommand"
+                "$ref": "#/components/schemas/AddNewSqlInstanceCommand"
               }
             }
           },
@@ -28,9 +28,13 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "",
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
             }
           },
           "201": {
@@ -49,60 +53,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Server/deleteserver": {
-      "delete": {
-        "tags": [
-          "Server"
-        ],
-        "summary": "Delete server",
-        "description": "Delete the existing server from the application, but it kept the historical data.",
-        "operationId": "DeleteServer",
-        "parameters": [
-          {
-            "name": "serverId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Result"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Result"
                 }
               }
             }
@@ -926,6 +876,120 @@
           }
         ]
       }
+    },
+    "/api/Server/addnewserver": {
+      "post": {
+        "tags": [
+          "Server"
+        ],
+        "summary": "Add new server",
+        "description": "Add new windows server of local or network.",
+        "operationId": "AddNewServer",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddNewServerCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Server/deleteserver": {
+      "delete": {
+        "tags": [
+          "Server"
+        ],
+        "summary": "Delete server",
+        "description": "Delete the existing server from the application, but it kept the historical data.",
+        "operationId": "DeleteServer",
+        "parameters": [
+          {
+            "name": "serverId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -974,24 +1038,12 @@
           }
         }
       },
-      "AddNewServerCommand": {
+      "AddNewSqlInstanceCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "serverName": {
-            "type": "string",
-            "nullable": true
-          },
-          "isRemoteServer": {
-            "type": "boolean"
-          },
-          "userName": {
-            "type": "string",
-            "nullable": true
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
+          "connectionString": {
+            "type": "string"
           }
         }
       },
@@ -1471,6 +1523,27 @@
           },
           "summary": {
             "type": "string"
+          }
+        }
+      },
+      "AddNewServerCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "serverName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isRemoteServer": {
+            "type": "boolean"
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
           }
         }
       }

@@ -6,4 +6,5 @@ public class SystemInfo : BaseAuditableEntity
     public string? OSVersion { get; set; }
     public ICollection<SystemMetric> Metrics { get; set; } = [];
     public ICollection<SystemHealth> SystemHealths { get; set; } = [];
+    public ICollection<SqlServerInstance> SqlServers { get; set; } = [];
 }
