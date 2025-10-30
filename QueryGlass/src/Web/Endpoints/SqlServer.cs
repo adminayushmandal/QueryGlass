@@ -16,15 +16,15 @@ public class SqlServer : EndpointGroupBase
         .WithSummary("Add new sql instance")
         .WithDescription("Add new sql instance of current system.")
         .Produces<Result>()
-        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<Result>(StatusCodes.Status400BadRequest)
         .WithOpenApi();
     }
 
-    public async Task<Results<Created<Result>, BadRequest>> AddNewSqlInstance(ISender sender, AddNewSqlInstanceCommand command)
+    public async Task<Results<Created<Result>, BadRequest<Result>>> AddNewSqlInstance(ISender sender, AddNewSqlInstanceCommand command)
     {
         var response = await sender.Send(command);
         return response.Succeeded
         ? TypedResults.Created(string.Empty, response)
-        : TypedResults.BadRequest();
+        : TypedResults.BadRequest(response);
     }
 }

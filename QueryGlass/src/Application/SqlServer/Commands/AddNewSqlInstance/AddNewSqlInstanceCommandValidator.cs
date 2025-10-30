@@ -4,6 +4,6 @@ public class AddNewSqlInstanceCommandValidator : AbstractValidator<AddNewSqlInst
 {
     public AddNewSqlInstanceCommandValidator()
     {
-        RuleFor(x => x.ConnectionString).NotEmpty().WithMessage("Connection string should not be empty.");
+        RuleFor(x => x.ServerName).NotEmpty().WithMessage("Connection string should not be empty.");
     }
 }

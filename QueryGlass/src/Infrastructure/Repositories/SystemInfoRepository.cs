@@ -6,9 +6,9 @@ using QueryGlass.Infrastructure.Data;
 
 namespace QueryGlass.Infrastructure.Repositories;
 
-internal sealed class SystemInfoRepository(ILogger<SystemInfoRepository> logger, ApplicationDbContext context) : ISystemInfoRepository
+internal sealed class WindowsRepository(ILogger<WindowsRepository> logger, ApplicationDbContext context) : IWindowsRepository
 {
-    private readonly ILogger<SystemInfoRepository> _logger = logger;
+    private readonly ILogger<WindowsRepository> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<SystemInfo?> CreateAsync(SystemInfo systemInfo, CancellationToken cancellationToken = default)
@@ -48,6 +48,9 @@ internal sealed class SystemInfoRepository(ILogger<SystemInfoRepository> logger,
     public async Task<SystemInfo?> GetSystemInfoByIdAsync(Guid systemId, CancellationToken cancellationToken = default)
         => await _context.SystemInformations.FirstOrDefaultAsync(x => x.Id == systemId, cancellationToken)
         ?? throw new KeyNotFoundException($"System info with d '{systemId}' not founded.");
+
+    public async Task<SystemInfo?> GetSystemInfoByNameAsync(string serverName, CancellationToken cancellationToken = default)
+    => await _context.SystemInformations.FirstOrDefaultAsync(x => x.MachineName == serverName, cancellationToken);
 
     public async Task<IEnumerable<SystemInfo>> GetSystemsAsync(CancellationToken cancellationToken = default)
         => await _context.SystemInformations.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);

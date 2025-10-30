@@ -49,7 +49,7 @@ public static class DependencyInjection
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
-        builder.Services.AddScoped<ISystemInfoRepository, SystemInfoRepository>();
+        builder.Services.AddScoped<IWindowsRepository, WindowsRepository>();
         builder.Services.AddScoped<ISystemMetrcRepository, SystemMetricRepository>();
         builder.Services.AddScoped<ISqlServerRepository, SqlServerRepository>();
         builder.Services.AddScoped<SqlServerRepository>();

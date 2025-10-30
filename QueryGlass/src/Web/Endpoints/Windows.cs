@@ -8,7 +8,7 @@ using QueryGlass.Domain.Constants;
 
 namespace QueryGlass.Web.Endpoints;
 
-public class Server : EndpointGroupBase
+public class Windows : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder groupBuilder)
     {

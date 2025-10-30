@@ -52,7 +52,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/Result"
                 }
               }
             }
@@ -877,10 +877,10 @@
         ]
       }
     },
-    "/api/Server/addnewserver": {
+    "/api/Windows/addnewserver": {
       "post": {
         "tags": [
-          "Server"
+          "Windows"
         ],
         "summary": "Add new server",
         "description": "Add new windows server of local or network.",
@@ -932,10 +932,10 @@
         ]
       }
     },
-    "/api/Server/deleteserver": {
+    "/api/Windows/deleteserver": {
       "delete": {
         "tags": [
-          "Server"
+          "Windows"
         ],
         "summary": "Delete server",
         "description": "Delete the existing server from the application, but it kept the historical data.",
@@ -1009,40 +1009,11 @@
           }
         }
       },
-      "ProblemDetails": {
-        "type": "object",
-        "additionalProperties": {
-          "nullable": true
-        },
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
       "AddNewSqlInstanceCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "connectionString": {
+          "serverName": {
             "type": "string"
           }
         }
@@ -1298,6 +1269,35 @@
             }
           }
         ]
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "RegisterRequest": {
         "type": "object",

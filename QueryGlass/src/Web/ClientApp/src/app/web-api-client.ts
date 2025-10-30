@@ -93,7 +93,7 @@ export class SqlServerClient implements ISqlServerClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
+            result400 = Result.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1344,7 +1344,7 @@ export class WeatherForecastsClient implements IWeatherForecastsClient {
     }
 }
 
-export interface IServerClient {
+export interface IWindowsClient {
     /**
      * Add new server
      * @return OK
@@ -1359,7 +1359,7 @@ export interface IServerClient {
 @Injectable({
     providedIn: 'root'
 })
-export class ServerClient implements IServerClient {
+export class WindowsClient implements IWindowsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1374,7 +1374,7 @@ export class ServerClient implements IServerClient {
      * @return OK
      */
     addNewServer(command: AddNewServerCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/Server/addnewserver";
+        let url_ = this.baseUrl + "/api/Windows/addnewserver";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1440,7 +1440,7 @@ export class ServerClient implements IServerClient {
      * Delete server
      */
     deleteServer(serverId: string): Observable<Result> {
-        let url_ = this.baseUrl + "/api/Server/deleteserver?";
+        let url_ = this.baseUrl + "/api/Windows/deleteserver?";
         if (serverId === undefined || serverId === null)
             throw new Error("The parameter 'serverId' must be defined and cannot be null.");
         else
@@ -1554,72 +1554,8 @@ export interface IResult {
     errors?: string[];
 }
 
-export class ProblemDetails implements IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
-
-    constructor(data?: IProblemDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.type = _data["type"];
-            this.title = _data["title"];
-            this.status = _data["status"];
-            this.detail = _data["detail"];
-            this.instance = _data["instance"];
-        }
-    }
-
-    static fromJS(data: any): ProblemDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemDetails();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["type"] = this.type;
-        data["title"] = this.title;
-        data["status"] = this.status;
-        data["detail"] = this.detail;
-        data["instance"] = this.instance;
-        return data;
-    }
-}
-
-export interface IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
-}
-
 export class AddNewSqlInstanceCommand implements IAddNewSqlInstanceCommand {
-    connectionString?: string;
+    serverName?: string;
 
     constructor(data?: IAddNewSqlInstanceCommand) {
         if (data) {
@@ -1632,7 +1568,7 @@ export class AddNewSqlInstanceCommand implements IAddNewSqlInstanceCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.connectionString = _data["connectionString"];
+            this.serverName = _data["serverName"];
         }
     }
 
@@ -1645,13 +1581,13 @@ export class AddNewSqlInstanceCommand implements IAddNewSqlInstanceCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["connectionString"] = this.connectionString;
+        data["serverName"] = this.serverName;
         return data;
     }
 }
 
 export interface IAddNewSqlInstanceCommand {
-    connectionString?: string;
+    serverName?: string;
 }
 
 export class PaginatedListOfTodoItemBriefDto implements IPaginatedListOfTodoItemBriefDto {
@@ -2187,6 +2123,70 @@ export class UpdateTodoListCommand implements IUpdateTodoListCommand {
 export interface IUpdateTodoListCommand {
     id?: number;
     title?: string | undefined;
+}
+
+export class ProblemDetails implements IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        return data;
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
 }
 
 export class HttpValidationProblemDetails extends ProblemDetails implements IHttpValidationProblemDetails {

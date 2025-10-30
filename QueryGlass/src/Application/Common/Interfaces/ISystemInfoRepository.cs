@@ -2,9 +2,11 @@
 
 namespace QueryGlass.Application.Common.Interfaces;
 
-public interface ISystemInfoRepository
+public interface IWindowsRepository
 {
     Task<SystemInfo?> GetSystemInfoByIdAsync(Guid systemId, CancellationToken cancellationToken = default);
+
+    Task<SystemInfo?> GetSystemInfoByNameAsync(string serverName, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<SystemInfo>> GetSystemsAsync(CancellationToken cancellationToken = default);
 
@@ -13,5 +15,5 @@ public interface ISystemInfoRepository
     Task<SystemInfo> UpdateAsync(SystemInfo systemInfo, CancellationToken cancellationToken = default);
 
     Task<bool> DeleteAsync(Guid systemId, CancellationToken cancellationToken = default);
-     Task<bool> IsExistAsync(string machineName, CancellationToken cancellationToken = default);
+    Task<bool> IsExistAsync(string machineName, CancellationToken cancellationToken = default);
 }
