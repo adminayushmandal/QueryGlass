@@ -60,7 +60,7 @@ public class AddNewServerCommandHandler(IWindowsRepository repository, ISystemPr
             operatingSystem = await _probeService.GetLocalMachineOsVersionAsync(request.ServerName, cancellationToken);
         }
 
-        var server = new Domain.Entities.SystemInfo
+        var server = new Domain.Entities.WindowsServer
         {
             MachineName = request.ServerName,
             OSVersion = operatingSystem,

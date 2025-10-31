@@ -1,6 +1,6 @@
 ﻿namespace QueryGlass.Domain.Entities;
 
-public class SystemInfo : BaseAuditableEntity
+public class WindowsServer : BaseAuditableEntity
 {
     public string? MachineName { get; set; }
     public string? OSVersion { get; set; }

@@ -3,7 +3,7 @@
 public class SqlServerInstance : BaseEntity<Guid>, IAuditableEntity
 {
     public Guid ServerId { get; set; }
-    public SystemInfo Server { get; set; } = null!;
+    public WindowsServer Server { get; set; } = null!;
     public string? InstanceName { get; set; }
     public string? Version { get; set; }
     public string? ConnectionString { get; set; }

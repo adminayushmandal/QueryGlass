@@ -8,7 +8,7 @@ public interface IApplicationDbContext
 
     DbSet<TodoItem> TodoItems { get; }
 
-    DbSet<SystemInfo> SystemInformations { get; }
+    DbSet<WindowsServer> WindowsServers { get; }
 
     DbSet<SystemMetric> SystemMetrics { get; }
 

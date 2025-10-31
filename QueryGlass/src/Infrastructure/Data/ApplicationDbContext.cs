@@ -12,7 +12,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
 
-    public DbSet<SystemInfo> SystemInformations => Set<SystemInfo>();
+    public DbSet<WindowsServer> WindowsServers => base.Set<WindowsServer>();
 
     public DbSet<SystemMetric> SystemMetrics => Set<SystemMetric>();
 

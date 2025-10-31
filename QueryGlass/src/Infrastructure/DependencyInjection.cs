@@ -50,7 +50,7 @@ public static class DependencyInjection
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
         builder.Services.AddScoped<IWindowsRepository, WindowsRepository>();
-        builder.Services.AddScoped<ISystemMetrcRepository, SystemMetricRepository>();
+        builder.Services.AddScoped<IWindowsMetricRepository, WindowsMetricRepository>();
         builder.Services.AddScoped<ISqlServerRepository, SqlServerRepository>();
         builder.Services.AddScoped<SqlServerRepository>();
         builder.Services.AddScoped<SqlServerMonitoringService>();
@@ -59,8 +59,8 @@ public static class DependencyInjection
 
         if (OperatingSystem.IsWindows())
         {
-            builder.Services.AddScoped<ISystemProbeService, SystemProbeService>();
-            builder.Services.AddHostedService<SystemMetricWorker>();
+            builder.Services.AddScoped<ISystemProbeService, WindowsProbeService>();
+            builder.Services.AddHostedService<WindowsMetricWorker>();
         }
 
         builder.Services.AddAuthentication()
