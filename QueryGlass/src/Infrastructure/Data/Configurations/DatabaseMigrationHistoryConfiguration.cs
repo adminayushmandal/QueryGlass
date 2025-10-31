@@ -9,10 +9,5 @@ internal sealed class DatabaseMigrationHistoryConfiguration : IEntityTypeConfigu
     public void Configure(EntityTypeBuilder<DatabaseMigrationHistory> builder)
     {
         builder.Property(x => x.Id).IsRequired().ValueGeneratedOnAdd();
-
-        builder.HasOne(x => x.User)
-            .WithMany(x => x.MigrationHistories)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
     }
 }

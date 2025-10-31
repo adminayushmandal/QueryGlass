@@ -8,7 +8,7 @@ public interface IApplicationDbContext
 
     DbSet<TodoItem> TodoItems { get; }
 
-    DbSet<SystemInfo> SystemInformations { get; }
+    DbSet<WindowsServer> WindowsServers { get; }
 
     DbSet<SystemMetric> SystemMetrics { get; }
 
@@ -23,6 +23,10 @@ public interface IApplicationDbContext
     DbSet<NetworkDetail> NetworkDetails { get; }
 
     DbSet<DatabaseMigrationHistory> DatabaseMigrationHistory { get; }
+
+    DbSet<SqlServerMetric> SqlServerMetrics { get; }
+
+    DbSet<SqlDatabaseMetric> SqlDatabaseMetrics { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

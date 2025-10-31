@@ -24,10 +24,10 @@ internal sealed class AddNewServerCommandValidator : AbstractValidator<AddNewSer
     }
 }
 
-public class AddNewServerCommandHandler(ISystemInfoRepository repository, ISystemProbeService probeService)
+public class AddNewServerCommandHandler(IWindowsRepository repository, ISystemProbeService probeService)
     : IRequestHandler<AddNewServerCommand, Result>
 {
-    private readonly ISystemInfoRepository _repository = repository;
+    private readonly IWindowsRepository _repository = repository;
     private readonly ISystemProbeService _probeService = probeService;
 
     public async Task<Result> Handle(AddNewServerCommand request, CancellationToken cancellationToken)
@@ -60,7 +60,7 @@ public class AddNewServerCommandHandler(ISystemInfoRepository repository, ISyste
             operatingSystem = await _probeService.GetLocalMachineOsVersionAsync(request.ServerName, cancellationToken);
         }
 
-        var server = new Domain.Entities.SystemInfo
+        var server = new Domain.Entities.WindowsServer
         {
             MachineName = request.ServerName,
             OSVersion = operatingSystem,

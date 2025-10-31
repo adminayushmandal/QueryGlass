@@ -2,7 +2,7 @@ using QueryGlass.Domain.Entities;
 
 namespace QueryGlass.Application.Common.Interfaces;
 
-public interface ISystemMetrcRepository
+public interface IWindowsMetricRepository
 {
     Task<SystemMetric?> CreateSystemMetricAsync(SystemMetric systemMetric, CancellationToken cancellationToken = default);
     Task<bool> DeleteSystemMetricAsync(Guid id, CancellationToken cancellationToken = default);

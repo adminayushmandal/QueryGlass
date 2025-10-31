@@ -12,7 +12,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
 
-    public DbSet<SystemInfo> SystemInformations => Set<SystemInfo>();
+    public DbSet<WindowsServer> WindowsServers => base.Set<WindowsServer>();
 
     public DbSet<SystemMetric> SystemMetrics => Set<SystemMetric>();
 
@@ -27,6 +27,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<NetworkDetail> NetworkDetails => Set<NetworkDetail>();
 
     public DbSet<DatabaseMigrationHistory> DatabaseMigrationHistory => Set<DatabaseMigrationHistory>();
+
+    public DbSet<SqlServerMetric> SqlServerMetrics => Set<SqlServerMetric>();
+
+    public DbSet<SqlDatabaseMetric> SqlDatabaseMetrics => Set<SqlDatabaseMetric>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
