@@ -14,6 +14,7 @@ using QueryGlass.Infrastructure.Identity;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using Serilog;
+using Microsoft.AspNetCore.DataProtection;
 
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -56,6 +57,10 @@ public static class DependencyInjection
         builder.Services.AddScoped<SqlServerMonitoringService>();
         builder.Services.AddScoped<SqlServerInstanceService>();
         builder.Services.AddScoped<ISqlConnectionValidatorService, SqlConnectionValidatorService>();
+        builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+        builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "cypherkeys")))
+        .SetApplicationName("QueryGlass");
 
         if (OperatingSystem.IsWindows())
         {

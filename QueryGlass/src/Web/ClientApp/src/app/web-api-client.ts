@@ -1046,6 +1046,10 @@ export interface IWindowsClient {
      * Delete server
      */
     deleteServer(serverId: string): Observable<Result>;
+    /**
+     * Windows Servers
+     */
+    getWindowsServers(): Observable<WindowsLookupDto>;
 }
 
 @Injectable({
@@ -1188,6 +1192,64 @@ export class WindowsClient implements IWindowsClient {
             let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result201 = Result.fromJS(resultData201);
             return _observableOf(result201);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Windows Servers
+     */
+    getWindowsServers(): Observable<WindowsLookupDto> {
+        let url_ = this.baseUrl + "/api/Windows/getwindowsservers";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWindowsServers(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWindowsServers(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WindowsLookupDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WindowsLookupDto>;
+        }));
+    }
+
+    protected processGetWindowsServers(response: HttpResponseBase): Observable<WindowsLookupDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WindowsLookupDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -2145,13 +2207,13 @@ export interface IInfoRequest {
     oldPassword?: string | undefined;
 }
 
-export class AddNewServerCommand implements IAddNewServerCommand {
+export class WindowsDto implements IWindowsDto {
+    id?: string;
     serverName?: string | undefined;
-    isRemoteServer?: boolean;
-    userName?: string | undefined;
-    password?: string | undefined;
+    os?: string | undefined;
+    created?: Date;
 
-    constructor(data?: IAddNewServerCommand) {
+    constructor(data?: IWindowsDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2162,35 +2224,106 @@ export class AddNewServerCommand implements IAddNewServerCommand {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.serverName = _data["serverName"];
-            this.isRemoteServer = _data["isRemoteServer"];
-            this.userName = _data["userName"];
-            this.password = _data["password"];
+            this.os = _data["os"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): AddNewServerCommand {
+    static fromJS(data: any): WindowsDto {
         data = typeof data === 'object' ? data : {};
-        let result = new AddNewServerCommand();
+        let result = new WindowsDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["serverName"] = this.serverName;
-        data["isRemoteServer"] = this.isRemoteServer;
-        data["userName"] = this.userName;
-        data["password"] = this.password;
+        data["os"] = this.os;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
         return data;
     }
 }
 
-export interface IAddNewServerCommand {
+export interface IWindowsDto {
+    id?: string;
     serverName?: string | undefined;
-    isRemoteServer?: boolean;
-    userName?: string | undefined;
-    password?: string | undefined;
+    os?: string | undefined;
+    created?: Date;
+}
+
+export class AddNewServerCommand extends WindowsDto implements IAddNewServerCommand {
+
+    constructor(data?: IAddNewServerCommand) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): AddNewServerCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddNewServerCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IAddNewServerCommand extends IWindowsDto {
+}
+
+export class WindowsLookupDto implements IWindowsLookupDto {
+    windows?: WindowsDto[];
+
+    constructor(data?: IWindowsLookupDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["windows"])) {
+                this.windows = [] as any;
+                for (let item of _data["windows"])
+                    this.windows!.push(WindowsDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WindowsLookupDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WindowsLookupDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.windows)) {
+            data["windows"] = [];
+            for (let item of this.windows)
+                data["windows"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWindowsLookupDto {
+    windows?: WindowsDto[];
 }
 
 export class SwaggerException extends Error {
