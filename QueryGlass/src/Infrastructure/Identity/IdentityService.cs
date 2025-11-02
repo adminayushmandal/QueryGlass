@@ -1,8 +1,12 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using QueryGlass.Application.Common.Interfaces;
 using QueryGlass.Application.Common.Models;
+using QueryGlass.Application.Configuration.Commands.ConfigureUser;
+using QueryGlass.Application.Configuration.Commands.UpdateUser;
+using QueryGlass.Domain.Constants;
 using QueryGlass.Domain.Entities;
 
 namespace QueryGlass.Infrastructure.Identity;
@@ -24,15 +28,17 @@ public class IdentityService(
         return user?.UserName;
     }
 
-    public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
+    public async Task<(Result Result, string UserId)> CreateUserAsync(ConfigureUserCommand request, CancellationToken cancellationToken = default)
     {
         var user = new ApplicationUser
         {
-            UserName = userName,
-            Email = userName,
+            UserName = request.Email,
+            Email = request.Email,
+            DisplayName = request.DisplayName,
+            PhoneNumber = request.PhoneNumber
         };
 
-        var result = await _userManager.CreateAsync(user, password);
+        var result = await _userManager.CreateAsync(user, request.Password);
 
         return (result.ToApplicationResult(), user.Id.ToString());
     }
@@ -83,5 +89,69 @@ public class IdentityService(
         var roles = await _userManager.GetRolesAsync(appUser);
         user.Roles = [.. roles];
         return user;
+    }
+
+    public async Task<IQueryable<ApplicationUser>> GetUsersAsync(string currentUser, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(currentUser)) throw new UnauthorizedAccessException(Error.UnauthorizeError);
+
+        if (!Guid.TryParse(currentUser, out var userId)) throw new UnauthorizedAccessException(Error.UnauthorizeError);
+
+        var users = _userManager.Users
+                .Where(x => x.Id != userId)
+                .AsNoTracking();
+
+        return await Task.Run(() => users);
+    }
+
+    public async Task<bool> AddToRoleAsync(string userId, string role)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+        var result = await _userManager.AddToRoleAsync(user, role);
+        return result.Succeeded;
+    }
+
+    public async Task<List<string>> GetRolesAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null) return [];
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return [.. roles];
+    }
+
+    public async Task<(Result, string)> UpdateUserAsync(UpdateUserCommand request, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(request.Email))
+        {
+            return (Result.Failure(["Email cannot be empty."]), string.Empty);
+        }
+
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        if (user == null)
+        {
+            return (Result.Failure(["User not found."]), string.Empty);
+        }
+        user.DisplayName = request.DisplayName;
+        user.PhoneNumber = request.PhoneNumber;
+        var result = await _userManager.UpdateAsync(user);
+        return (result.ToApplicationResult(), user.Id.ToString());
+    }
+
+    public async Task<bool> UpdateRoleAsync(string userId, string newRole)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        if (!removeResult.Succeeded) return false;
+
+        var addResult = await _userManager.AddToRoleAsync(user, newRole);
+        return addResult.Succeeded;
     }
 }

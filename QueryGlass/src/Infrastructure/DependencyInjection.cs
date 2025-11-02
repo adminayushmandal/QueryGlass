@@ -61,13 +61,20 @@ public static class DependencyInjection
         {
             builder.Services.AddScoped<ISystemProbeService, WindowsProbeService>();
             builder.Services.AddHostedService<WindowsMetricWorker>();
+            builder.Services.AddScoped<ISystemProbeService, WindowsProbeService>();
+            builder.Services.AddHostedService<WindowsMetricWorker>();
         }
 
         builder.Services.AddAuthentication()
         .AddBearerToken(IdentityConstants.BearerScheme);
 
         builder.Services.AddAuthorization(options =>
-            options.AddPolicy(Policies.AdminCanPurge, policy => policy.RequireRole(Roles.Administrator)));
+            {
+                options.AddPolicy(Policies.AdminCanPurge, policy => policy.RequireRole(Roles.Administrator));
+                options.AddPolicy(Policies.OperatorCanPurge, p => p.RequireRole(Roles.Operator));
+                options.AddPolicy(Policies.DBACanPurge, p => p.RequireRole(Roles.DBA));
+                options.AddPolicy(Policies.ReadOnly, p => p.RequireRole(Roles.Viewer));
+            });
 
         builder.Services.AddSerilog((sp, opt) =>
         {

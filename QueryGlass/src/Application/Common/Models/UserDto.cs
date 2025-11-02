@@ -10,7 +10,9 @@ public record UserDto
     public bool EmailVerified { get; init; }
     public string? PhoneNumber { get; init; }
     public bool PhoneNumberVerified { get; init; }
+    public DateTimeOffset Created { get; set; }
     public List<string> Roles { get; set; } = [];
+    public List<string> Policies { get; set; } = [];
     private class Mapping : Profile
     {
         public Mapping()
@@ -19,7 +21,8 @@ public record UserDto
             .ForMember(dest => dest.EmailAddress, o => o.MapFrom(src => src.Email))
             .ForMember(dest => dest.EmailVerified, o => o.MapFrom(src => src.EmailConfirmed))
             .ForMember(dest => dest.PhoneNumberVerified, o => o.MapFrom(src => src.PhoneNumberConfirmed))
-            .ForMember(dest => dest.Roles, o => o.Ignore());
+            .ForMember(dest => dest.Roles, o => o.Ignore())
+            .ForMember(dest => dest.Policies, o => o.Ignore());
         }
     }
 }

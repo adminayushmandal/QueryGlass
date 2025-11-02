@@ -1,5 +1,4 @@
 ﻿using QueryGlass.Application.Common.Interfaces;
-using QueryGlass.Application.Common.Models;
 using QueryGlass.Application.Common.Security;
 using QueryGlass.Domain.Enums;
 
