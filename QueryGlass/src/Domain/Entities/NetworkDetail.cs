@@ -2,8 +2,8 @@
 
 public class NetworkDetail : BaseEntity<Guid>, IAuditableEntity
 {
-    public Guid SystemMetricId { get; set; }
-    public SystemMetric SystemMetric { get; set; } = null!;
+    public Guid WindowsMetricId { get; set; }
+    public SystemMetric WindowsMetric { get; set; } = null!;
     public string InterfaceName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string MACAddress { get; set; } = string.Empty;

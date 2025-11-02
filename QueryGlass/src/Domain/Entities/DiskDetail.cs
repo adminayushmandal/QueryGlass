@@ -2,8 +2,8 @@
 
 public class DiskDetail : BaseEntity<Guid>, IAuditableEntity
 {
-    public Guid SystemMetricId { get; set; }
-    public SystemMetric SystemMetric { get; set; } = null!;
+    public Guid WindowsMetricId { get; set; }
+    public SystemMetric WindowsMetric { get; set; } = null!;
     public string? DriveLetter { get; set; }
     public double? DiskReadSpeedMBps { get; set; }
     public double? DiskWriteSpeedMBps { get; set; }

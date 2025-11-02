@@ -15,5 +15,8 @@ public interface IWindowsRepository
     Task<WindowsServer> UpdateAsync(WindowsServer systemInfo, CancellationToken cancellationToken = default);
 
     Task<bool> DeleteAsync(Guid systemId, CancellationToken cancellationToken = default);
+
     Task<bool> IsExistAsync(string machineName, CancellationToken cancellationToken = default);
+
+    Task<IQueryable<WindowsServer>> GetWindowsServersAsync(CancellationToken cancellationToken = default);
 }
