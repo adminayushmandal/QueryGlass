@@ -808,6 +808,43 @@
           }
         ]
       }
+    },
+    "/api/Windows/getwindowsservers": {
+      "get": {
+        "tags": [
+          "Windows"
+        ],
+        "summary": "Windows Servers",
+        "description": "Get the windows servers",
+        "operationId": "GetWindowsServers",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WindowsLookupDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1177,23 +1214,47 @@
         }
       },
       "AddNewServerCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WindowsDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "WindowsDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "serverName": {
             "type": "string",
             "nullable": true
           },
-          "isRemoteServer": {
-            "type": "boolean"
-          },
-          "userName": {
+          "os": {
             "type": "string",
             "nullable": true
           },
-          "password": {
+          "created": {
             "type": "string",
-            "nullable": true
+            "format": "date-time"
+          }
+        }
+      },
+      "WindowsLookupDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "windows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WindowsDto"
+            }
           }
         }
       }

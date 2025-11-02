@@ -45,7 +45,7 @@ internal sealed class WindowsMetricWorker(
 
                 if (systemInfo != null)
                 {
-                    metric.SystemInfoId = systemInfo.Id;
+                    metric.WindowsId = systemInfo.Id;
                     await systemRepository.CreateSystemMetricAsync(metric, cancellationToken);
                     _logger.LogInformation("Collected and stored metrics for machine: {MachineName}", machineName);
                 }

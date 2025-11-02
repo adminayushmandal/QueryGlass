@@ -1,9 +1,9 @@
-﻿
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using QueryGlass.Application.Common.Models;
-using QueryGlass.Application.SystemInformation.Commands.AddNewServer;
-using QueryGlass.Application.SystemInformation.Commands.DeleteServer;
+using QueryGlass.Application.Windows.Commands.AddNewServer;
+using QueryGlass.Application.Windows.Commands.DeleteServer;
+using QueryGlass.Application.Windows.Queries.GetWindowsServers;
 using QueryGlass.Domain.Constants;
 
 namespace QueryGlass.Web.Endpoints;
@@ -30,6 +30,14 @@ public class Windows : EndpointGroupBase
         .Produces<Result>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .WithOpenApi();
+
+        groupBuilder.MapGet(GetWindowsServers, nameof(GetWindowsServers).ToLower())
+        .RequireAuthorization()
+        .WithSummary("Windows Servers")
+        .WithDescription("Get the windows servers")
+        .Produces<WindowsLookupDto>()
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound)
+        .WithOpenApi();
     }
 
     async Task<Results<Created<Result>, BadRequest>> AddNewServer(ISender sender, AddNewServerCommand command)
@@ -46,5 +54,11 @@ public class Windows : EndpointGroupBase
         return response.Succeeded
         ? TypedResults.Ok(response)
         : TypedResults.BadRequest(response);
+    }
+
+    async Task<Results<Ok<WindowsLookupDto>, NotFound>> GetWindowsServers(ISender sender)
+    {
+        var servers = await sender.Send(new GetWindowsServersQuery());
+        return servers is null ? TypedResults.NotFound() : TypedResults.Ok(servers);
     }
 }

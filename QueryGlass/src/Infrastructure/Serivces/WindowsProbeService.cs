@@ -53,8 +53,8 @@ internal sealed class WindowsProbeService(ILogger<WindowsProbeService> logger) :
             var metric = new SystemMetric
             {
                 Id = Guid.CreateVersion7(DateTimeOffset.UtcNow),
-                SystemInfoId = Guid.Empty, // Will be set by service/handler before saving
-                SystemInfo = null!,
+                WindowsId = Guid.Empty, // Will be set by service/handler before saving
+                Windows = null!,
                 CpuDetail = cpuDetail,
                 MemoryDetail = memoryDetail,
                 DiskDetails = diskDetails,
