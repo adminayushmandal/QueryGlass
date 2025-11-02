@@ -1,6 +1,5 @@
 ﻿using QueryGlass.Application.Common.Interfaces;
 using QueryGlass.Application.Common.Mappings;
-using QueryGlass.Application.Common.Models;
 
 namespace QueryGlass.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 

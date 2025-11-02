@@ -5,7 +5,7 @@ using QueryGlass.Domain.Constants;
 namespace QueryGlass.Application.TodoLists.Commands.PurgeTodoLists;
 
 [Authorize(Roles = Roles.Administrator)]
-[Authorize(Policy = Policies.CanPurge)]
+[Authorize(Policy = Policies.AdminCanPurge)]
 public record PurgeTodoListsCommand : IRequest;
 
 public class PurgeTodoListsCommandHandler : IRequestHandler<PurgeTodoListsCommand>

@@ -1,8 +1,6 @@
 ﻿using System.Data.Common;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 using QueryGlass.Infrastructure.Data;
 using Respawn;

@@ -1,6 +1,4 @@
-﻿using QueryGlass.Application.Common.Models;
-
-namespace QueryGlass.Application.Common.Mappings;
+﻿namespace QueryGlass.Application.Common.Mappings;
 
 public static class MappingExtensions
 {

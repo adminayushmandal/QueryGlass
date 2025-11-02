@@ -6,12 +6,12 @@ using QueryGlass.Application.Common.Interfaces;
 
 namespace QueryGlass.Infrastructure.Serivces;
 
-internal sealed class SystemMetricWorker(
-    ILogger<SystemMetricWorker> logger,
+internal sealed class WindowsMetricWorker(
+    ILogger<WindowsMetricWorker> logger,
     IServiceScopeFactory scopeFactory)
-    : BackgroundService, ISystemMetricWorker
+    : BackgroundService, IWindowsMetricWorker
 {
-    private readonly ILogger<SystemMetricWorker> _logger = logger;
+    private readonly ILogger<WindowsMetricWorker> _logger = logger;
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
 
     public async Task StartCollectMetricsAsync(CancellationToken cancellationToken = default)
@@ -22,9 +22,9 @@ internal sealed class SystemMetricWorker(
         var provider = scope.ServiceProvider;
         var context = provider.GetRequiredService<IApplicationDbContext>();
         var systemProbeService = provider.GetRequiredService<ISystemProbeService>();
-        var systemRepository = provider.GetRequiredService<ISystemMetrcRepository>();
+        var systemRepository = provider.GetRequiredService<IWindowsMetricRepository>();
 
-        var machineNames = await context.SystemInformations
+        var machineNames = await context.WindowsServers
             .Select(si => si.MachineName)
             .Where(m => !string.IsNullOrWhiteSpace(m))
             .ToListAsync(cancellationToken);
@@ -40,7 +40,7 @@ internal sealed class SystemMetricWorker(
             try
             {
                 var metric = await systemProbeService.CollectSystemMetricsAsync(machineName!, cancellationToken);
-                var systemInfo = await context.SystemInformations
+                var systemInfo = await context.WindowsServers
                     .FirstOrDefaultAsync(si => si.MachineName == machineName, cancellationToken);
 
                 if (systemInfo != null)

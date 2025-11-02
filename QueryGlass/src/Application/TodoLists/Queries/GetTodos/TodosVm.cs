@@ -1,6 +1,4 @@
-﻿using QueryGlass.Application.Common.Models;
-
-namespace QueryGlass.Application.TodoLists.Queries.GetTodos;
+﻿namespace QueryGlass.Application.TodoLists.Queries.GetTodos;
 
 public class TodosVm
 {

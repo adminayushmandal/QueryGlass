@@ -6,9 +6,9 @@ using QueryGlass.Infrastructure.Data;
 
 namespace QueryGlass.Infrastructure.Repositories;
 
-internal sealed class SystemMetricRepository(ILogger<SystemMetricRepository> logger, ApplicationDbContext context) : ISystemMetrcRepository
+internal sealed class WindowsMetricRepository(ILogger<WindowsMetricRepository> logger, ApplicationDbContext context) : IWindowsMetricRepository
 {
-    private readonly ILogger<SystemMetricRepository> _logger = logger;
+    private readonly ILogger<WindowsMetricRepository> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<SystemMetric?> CreateSystemMetricAsync(SystemMetric systemMetric, CancellationToken cancellationToken = default)

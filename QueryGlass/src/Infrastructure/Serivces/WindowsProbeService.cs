@@ -9,9 +9,9 @@ using System.Diagnostics;
 namespace QueryGlass.Infrastructure.Serivces;
 
 [SupportedOSPlatform("windows")]
-internal sealed class SystemProbeService(ILogger<SystemProbeService> logger) : ISystemProbeService
+internal sealed class WindowsProbeService(ILogger<WindowsProbeService> logger) : ISystemProbeService
 {
-    private readonly ILogger<SystemProbeService> _logger = logger;
+    private readonly ILogger<WindowsProbeService> _logger = logger;
     public async Task<bool> CheckServerAvailabilityAsync(string hostName, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Checking availability for host: {HostName}", hostName);
@@ -76,11 +76,11 @@ internal sealed class SystemProbeService(ILogger<SystemProbeService> logger) : I
         {
             return await Task.Run(() =>
             {
-                var query = new System.Management.ManagementObjectSearcher(
+                var query = new ManagementObjectSearcher(
                     $"SELECT Caption FROM Win32_OperatingSystem WHERE CSName = '{hostName}'");
 
                 var results = query.Get();
-                foreach (System.Management.ManagementObject os in results)
+                foreach (ManagementObject os in results)
                 {
                     var osName = os["Caption"]?.ToString() ?? "Unknown";
                     _logger.LogInformation("Operating system for host {HostName} is {OSName}", hostName, osName);

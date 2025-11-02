@@ -18,8 +18,6 @@ public class ApplicationUser : IdentityUser<Guid>, IAuditableEntity, IDomainEven
 
     public ICollection<AppSetting> AppSettings { get; set; } = [];
 
-    public ICollection<DatabaseMigrationHistory> MigrationHistories { get; set; } = [];
-
     private readonly List<BaseEvent> _domainEvents = [];
 
     [NotMapped]

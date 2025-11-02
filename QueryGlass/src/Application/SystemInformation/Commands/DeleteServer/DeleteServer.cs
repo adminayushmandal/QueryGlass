@@ -11,9 +11,9 @@ public class DeleteServerCommandValidator : AbstractValidator<DeleteServerComman
     }
 }
 
-internal sealed class DeleteServerCommandHandler(ISystemInfoRepository systemInfoRepository) : IRequestHandler<DeleteServerCommand, Result>
+internal sealed class DeleteServerCommandHandler(IWindowsRepository systemInfoRepository) : IRequestHandler<DeleteServerCommand, Result>
 {
-    private readonly ISystemInfoRepository _systemInfoRepository = systemInfoRepository;
+    private readonly IWindowsRepository _systemInfoRepository = systemInfoRepository;
     public async Task<Result> Handle(DeleteServerCommand request, CancellationToken cancellationToken)
     {
         var result = await _systemInfoRepository.DeleteAsync(request.SystemInfoId, cancellationToken);

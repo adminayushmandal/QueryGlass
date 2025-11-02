@@ -49,19 +49,32 @@ public static class DependencyInjection
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
-        builder.Services.AddScoped<ISystemInfoRepository, SystemInfoRepository>();
-        builder.Services.AddScoped<ISystemMetrcRepository, SystemMetricRepository>();
+        builder.Services.AddScoped<IWindowsRepository, WindowsRepository>();
+        builder.Services.AddScoped<IWindowsMetricRepository, WindowsMetricRepository>();
+        builder.Services.AddScoped<ISqlServerRepository, SqlServerRepository>();
+        builder.Services.AddScoped<SqlServerRepository>();
+        builder.Services.AddScoped<SqlServerMonitoringService>();
+        builder.Services.AddScoped<SqlServerInstanceService>();
+        builder.Services.AddScoped<ISqlConnectionValidatorService, SqlConnectionValidatorService>();
+
         if (OperatingSystem.IsWindows())
         {
-            builder.Services.AddScoped<ISystemProbeService, SystemProbeService>();
-            builder.Services.AddHostedService<SystemMetricWorker>();
+            builder.Services.AddScoped<ISystemProbeService, WindowsProbeService>();
+            builder.Services.AddHostedService<WindowsMetricWorker>();
+            builder.Services.AddScoped<ISystemProbeService, WindowsProbeService>();
+            builder.Services.AddHostedService<WindowsMetricWorker>();
         }
 
         builder.Services.AddAuthentication()
         .AddBearerToken(IdentityConstants.BearerScheme);
 
         builder.Services.AddAuthorization(options =>
-            options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
+            {
+                options.AddPolicy(Policies.AdminCanPurge, policy => policy.RequireRole(Roles.Administrator));
+                options.AddPolicy(Policies.OperatorCanPurge, p => p.RequireRole(Roles.Operator));
+                options.AddPolicy(Policies.DBACanPurge, p => p.RequireRole(Roles.DBA));
+                options.AddPolicy(Policies.ReadOnly, p => p.RequireRole(Roles.Viewer));
+            });
 
         builder.Services.AddSerilog((sp, opt) =>
         {
