@@ -1,0 +1,13 @@
+<p-splitter [panelSizes]="[20,80]" class="w-full h-screen!">
+    <ng-template #panel>
+        <div class="w-full">
+            <p class="text-sm">Sidebar menus here</p>
+        </div>
+    </ng-template>
+    <ng-template #panel>
+        <queryGlass-navbar />
+        <div class="h-full px-4 py-2">
+            <router-outlet />
+        </div>
+    </ng-template>
+</p-splitter>

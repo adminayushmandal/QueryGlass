@@ -1,7 +1,7 @@
 using QueryGlass.Domain.Entities;
 using Microsoft.Data.SqlClient;
 
-namespace QueryGlass.Infrastructure.Serivces;
+namespace QueryGlass.Infrastructure.Services;
 
 public static class SqlMetricCollector
 {

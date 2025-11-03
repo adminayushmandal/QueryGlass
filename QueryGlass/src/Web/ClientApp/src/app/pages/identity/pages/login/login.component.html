@@ -1,0 +1,22 @@
+<div class="w-full h-screen grid sm:grid-cols-4 grid-cols-1">
+    <div class="content-center h-full px-4">
+        <h4 class="text-2xl font-semibold mb-1">Query Glass</h4>
+        <p class="mb-3 text-sm text-slate-400">Welcome to the <strong>Query Glass</strong>, login to the app.</p>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <p-floatLabel variant="on" class="mb-3">
+                <input fluid type="email" name="email" id="email" pInputText placeholder="Email address"
+                    autocomplete="off" formControlName="email">
+                <label for="email">Email address</label>
+            </p-floatLabel>
+
+            <p-floatLabel variant="on" class=" mb-3">
+                <input fluid type="password" name="password" id="password" pInputText placeholder="Password"
+                    autocomplete="off" formControlName="password">
+                <label for="password">Password</label>
+            </p-floatLabel>
+
+            <button type="submit" pButton size="small" severity="primary"
+                class="w-full hover:shadow-lg hover:shadow-primary-300/55">Login</button>
+        </form>
+    </div>
+</div>

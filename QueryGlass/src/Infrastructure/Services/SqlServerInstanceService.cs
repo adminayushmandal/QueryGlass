@@ -2,7 +2,7 @@ using QueryGlass.Application.Common.Interfaces;
 using QueryGlass.Application.Common.Models;
 using QueryGlass.Domain.Entities;
 
-namespace QueryGlass.Infrastructure.Serivces;
+namespace QueryGlass.Infrastructure.Services;
 
 internal sealed class SqlServerInstanceService(ISqlServerRepository sqlServerRepository)
 {

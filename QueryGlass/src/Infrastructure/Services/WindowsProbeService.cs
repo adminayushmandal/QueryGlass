@@ -6,7 +6,7 @@ using QueryGlass.Application.Common.Interfaces;
 using QueryGlass.Domain.Entities;
 using System.Diagnostics;
 
-namespace QueryGlass.Infrastructure.Serivces;
+namespace QueryGlass.Infrastructure.Services;
 
 [SupportedOSPlatform("windows")]
 internal sealed class WindowsProbeService(ILogger<WindowsProbeService> logger) : ISystemProbeService

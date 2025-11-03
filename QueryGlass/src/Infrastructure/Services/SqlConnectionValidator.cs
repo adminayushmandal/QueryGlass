@@ -1,7 +1,7 @@
 using Microsoft.Data.SqlClient;
 using QueryGlass.Application.Common.Interfaces;
 
-namespace QueryGlass.Infrastructure.Serivces;
+namespace QueryGlass.Infrastructure.Services;
 
 public static class SqlConnectionValidator
 {

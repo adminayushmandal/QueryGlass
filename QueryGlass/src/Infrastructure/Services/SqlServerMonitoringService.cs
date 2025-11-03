@@ -1,4 +1,4 @@
-namespace QueryGlass.Infrastructure.Serivces;
+namespace QueryGlass.Infrastructure.Services;
 
 internal sealed class SqlServerMonitoringService(SqlServerRepository sqlServerRepository)
 {

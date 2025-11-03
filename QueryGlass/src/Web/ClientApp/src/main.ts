@@ -6,19 +6,21 @@ import {
   EnvironmentProviders,
   provideZonelessChangeDetection, InjectionToken
 } from '@angular/core';
-import {providePrimeNG} from 'primeng/config';
+import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 
 
-import {environment} from './environments/environment';
-import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
-import {AuthorizeInterceptor} from 'src/api-authorization/authorize.interceptor';
-import {BrowserModule, bootstrapApplication} from '@angular/platform-browser';
-import {FormsModule} from '@angular/forms';
-import {provideRouter} from '@angular/router';
-import {AppComponent} from './app/app.component';
-import {provideAnimationsAsync} from "@angular/platform-browser/animations/async";
-import {routes} from "./app/app.route";
+import { environment } from './environments/environment';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
+import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { provideRouter } from '@angular/router';
+import { AppComponent } from './app/app.component';
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
+import { routes } from "./app/app.route";
+import { queryGlassTheme } from './app/core/utils/queryGlassTheme';
+import { MessageService } from 'primeng/api';
 
 export function getBaseUrl() {
   return document.getElementsByTagName('base')[0].href;
@@ -27,8 +29,8 @@ export function getBaseUrl() {
 export const ALERT_DURATION = new InjectionToken<number>('alertDuration')
 
 const providers: (Provider | EnvironmentProviders)[] = [
-  {provide: 'BASE_URL', useFactory: getBaseUrl, deps: []},
-  {provide: ALERT_DURATION, useValue: 4200}
+  { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] },
+  { provide: ALERT_DURATION, useValue: 4200 }
 ];
 
 if (environment.production) {
@@ -39,17 +41,18 @@ bootstrapApplication(AppComponent, {
   providers: [
     ...providers,
     importProvidersFrom(BrowserModule, FormsModule),
-    {provide: APP_ID, useValue: 'ng-cli-universal'},
-    {provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true},
+    { provide: APP_ID, useValue: 'ng-cli-universal' },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
     provideHttpClient(withInterceptorsFromDi()),
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura
+        preset: queryGlassTheme
       }
-    })
+    }),
+    MessageService
   ]
 })
   .catch(err => console.log(err));

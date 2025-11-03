@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using QueryGlass.Application.Common.Interfaces;
 
-namespace QueryGlass.Infrastructure.Serivces;
+namespace QueryGlass.Infrastructure.Services;
 
 internal sealed class WindowsMetricWorker(
     ILogger<WindowsMetricWorker> logger,

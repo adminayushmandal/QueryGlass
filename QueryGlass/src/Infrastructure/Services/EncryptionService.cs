@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using QueryGlass.Application.Common.Interfaces;
 
-namespace QueryGlass.Infrastructure.Serivces;
+namespace QueryGlass.Infrastructure.Services;
 
 internal sealed class EncryptionService(IDataProtectionProvider provider, IConfiguration configuration) : IEncryptionService
 {

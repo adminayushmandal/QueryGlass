@@ -1,3 +1,3 @@
 ﻿global using Ardalis.GuardClauses;
 global using QueryGlass.Infrastructure.Repositories;
-global using QueryGlass.Infrastructure.Serivces;
+global using QueryGlass.Infrastructure.Services;
