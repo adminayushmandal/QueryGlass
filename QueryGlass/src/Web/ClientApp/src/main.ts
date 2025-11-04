@@ -4,15 +4,15 @@ import {
   importProvidersFrom,
   Provider,
   EnvironmentProviders,
-  provideZonelessChangeDetection, InjectionToken
+  InjectionToken,
+  provideZoneChangeDetection
 } from '@angular/core';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
 
 
 import { environment } from './environments/environment';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { provideRouter } from '@angular/router';
@@ -27,9 +27,10 @@ export function getBaseUrl() {
 }
 
 export const ALERT_DURATION = new InjectionToken<number>('alertDuration')
+export const BASE_URL = new InjectionToken<string>('BASE_URL');
 
 const providers: (Provider | EnvironmentProviders)[] = [
-  { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] },
+  { provide: BASE_URL, useFactory: getBaseUrl, deps: [] },
   { provide: ALERT_DURATION, useValue: 4200 }
 ];
 
@@ -42,9 +43,8 @@ bootstrapApplication(AppComponent, {
     ...providers,
     importProvidersFrom(BrowserModule, FormsModule),
     { provide: APP_ID, useValue: 'ng-cli-universal' },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
-    provideHttpClient(withInterceptorsFromDi()),
-    provideZonelessChangeDetection(),
+    provideHttpClient(withInterceptors([authorizeInterceptor])),
+    provideZoneChangeDetection(),
     provideRouter(routes),
     provideAnimationsAsync(),
     providePrimeNG({
